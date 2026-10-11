@@ -1,6 +1,8 @@
 package esepunittests
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGetGradeA(t *testing.T) {
 	expected_value := "A"
@@ -119,5 +121,51 @@ func TestGradeTypeString(t *testing.T) {
 		if actual_value := gradeType.String(); actual_value != expected_value {
 			t.Errorf("Expected String() to return '%s'; got '%s' instead", expected_value, actual_value)
 		}
+	}
+}
+
+func newPassFail(assignmentGrade, examGrade, essayGrade int) *GradeCalculator {
+	GradeCalculator := NewGradeCalculatorWithMode(PassFail)
+
+	GradeCalculator.AddGrade("assignment", assignmentGrade, Assignment)
+	GradeCalculator.AddGrade("exam", examGrade, Exam)
+	GradeCalculator.AddGrade("essay", essayGrade, Essay)
+
+	return GradeCalculator
+}
+
+func TestPassFailWithA(t *testing.T) {
+	if actual_value := newPassFail(100, 100, 100).GetFinalGrade(); actual_value != "Pass" {
+		t.Errorf("Expected 'Pass'; got '%s' instead", actual_value)
+	}
+}
+
+func TestPassFailWithC(t *testing.T) {
+	if actual_value := newPassFail(70, 70, 70).GetFinalGrade(); actual_value != "Pass" {
+		t.Errorf("Expected 'Pass'; got '%s' instead", actual_value)
+	}
+}
+
+func TestPassFailWithD(t *testing.T) {
+	if actual_value := newPassFail(69, 69, 69).GetFinalGrade(); actual_value != "Fail" {
+		t.Errorf("Expected 'Fail'; got '%s' instead", actual_value)
+	}
+}
+
+func TestPassFailWithF(t *testing.T) {
+	if actual_value := newPassFail(40, 50, 55).GetFinalGrade(); actual_value != "Fail" {
+		t.Errorf("Expected 'Fail'; got '%s' instead", actual_value)
+	}
+}
+
+func TestDefaultReturnsLetterGrade(t *testing.T) {
+	gradeCalculator := NewGradeCalculator()
+
+	gradeCalculator.AddGrade("assignment", 100, Assignment)
+	gradeCalculator.AddGrade("exam", 100, Exam)
+	gradeCalculator.AddGrade("essay", 100, Essay)
+
+	if actual_value := gradeCalculator.GetFinalGrade(); actual_value != "A" {
+		t.Errorf("Expected 'A'; got '%s' instead", actual_value)
 	}
 }
